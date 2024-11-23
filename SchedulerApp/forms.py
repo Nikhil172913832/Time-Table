@@ -29,7 +29,11 @@ class RoomForm(ModelForm):
         model = Room
         labels = {'r_number': 'Room Number'}
         fields = ['r_number', 'seating_capacity']
-
+    def clean_r_number(self):
+        r_number = self.cleaned_data.get('r_number')
+        if Room.objects.filter(r_number=r_number).exists():
+            raise forms.ValidationError("Room number must be unique.")
+        return r_number
 
 class InstructorForm(ModelForm):
     class Meta:
@@ -52,11 +56,14 @@ class MeetingTimeForm(ModelForm):
 class CourseForm(ModelForm):
     class Meta:
         model = Course
-        labels = {'max_numb_students': 'Maximum students'}
-        fields = [
-            'course_number', 'course_name', 'max_numb_students', 'instructors'
-        ]
-
+        labels = {
+            'course_name': 'Course Name',
+            'course_number': 'Course Number',
+            'max_numb_students': 'Max Number of Students',
+            'instructors': 'Instructors',
+            'has_lab': 'Has Lab'
+        }
+        fields = ['course_name', 'course_number', 'max_numb_students', 'instructors', 'has_lab']
 
 class DepartmentForm(ModelForm):
     class Meta:

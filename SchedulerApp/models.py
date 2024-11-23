@@ -5,11 +5,14 @@ from django.db.models.signals import post_save, post_delete
 
 
 TIME_SLOTS = (
-    ('8:45 - 9:45'  , '8:45 - 9:45'),
-    ('10:00 - 11:00', '10:00 - 11:00'),
-    ('11:00 - 12:00', '11:00 - 12:00'),
-    ('1:00 - 2:00'  , '1:00 - 2:00'),
-    ('2:15 - 3:15'  , '2:15 - 3:15'),
+    ('9:00 - 9:50'  , '9:00 - 9:50'),
+    ('9:50 - 10:40', '9:50 - 10:40'),
+    ('11:00 - 11:50', '11:00 - 11:50'),
+    ('11:50 - 12:40', '11:50 - 12:40'),
+    ('14:00 - 14:50', '14:00 - 14:50'),
+    ('14:50 - 15:40', '14:50 - 15:40'),
+    ('15:40 - 16:30', '15:40 - 16:30'),
+    ('16:30 - 17:20', '16:30 - 17:20'),
 )
 
 # TIME_SLOTS = (
@@ -33,7 +36,7 @@ DAYS_OF_WEEK = (
 
 
 class Room(models.Model):
-    r_number = models.CharField(max_length=6)
+    r_number = models.CharField(max_length=66, unique=True)
     seating_capacity = models.IntegerField(default=0)
 
     def __str__(self):
@@ -57,14 +60,21 @@ class MeetingTime(models.Model):
 
     def __str__(self):
         return f'{self.pid} {self.day} {self.time}'
-
+    
+    def is_continuous_with(self, other):
+        # Assuming TIME_SLOTS are ordered and continuous
+        time_slots = [slot[0] for slot in TIME_SLOTS]
+        current_index = time_slots.index(self.time)
+        next_index = (current_index + 1) % len(time_slots)
+        return self.day == other.day and time_slots[next_index] == other.time
 
 class Course(models.Model):
     course_number = models.CharField(max_length=5, primary_key=True)
     course_name = models.CharField(max_length=40)
     max_numb_students = models.CharField(max_length=65)
     instructors = models.ManyToManyField(Instructor)
-
+    has_lab = models.BooleanField(default=False)
+    
     def __str__(self):
         return f'{self.course_number} {self.course_name}'
 

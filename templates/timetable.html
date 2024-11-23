@@ -22,7 +22,15 @@
       <tr>
         <th>{{week.0}}</th>
         {% for time in timeSlots %}
-        <td>{% sub schedule section.section_id week.0 time.0 %}</td>
+        <td>
+          {% for class in schedule %}
+            {% if class.section == section.section_id and class.meeting_time.day == week.0 and class.meeting_time.time == time.0 %}
+              {{ class.course.course_name }}<br>
+              Room: {{ class.room.r_number }}<br>
+              Instructor: {{ class.instructor.name }}
+            {% endif %}
+          {% endfor %}
+        </td>
         {% endfor %}
       </tr>
       {% endfor %}

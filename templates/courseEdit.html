@@ -3,8 +3,6 @@
 {% load static %}
 {% load index %}
 
-
-
 <fieldset class="fieldset">
   <div class="tablink">
     <a href="{% url 'courseAdd'%}">
@@ -18,21 +16,22 @@
         <tr class="table-headers">
           <th>Course Code</th>
           <th>Course Name</th>
-          <th>Max students</th>
+          <th>Max Students</th>
           <th>Instructors</th>
+          <th>Has Lab</th>
           <th class="empty"></th>
         </tr>
       </thead>
-
       <tbody>
         {% for crs in courses %}
         <tr>
-          <td>{{crs.course_number}}</td>
-          <td>{{crs.course_name}}</td>
-          <td>{{crs.max_numb_students}}</td>
-          <td>{{instructor|dictKey:crs.course_number}}</td>
+          <td>{{ crs.course_number }}</td>
+          <td>{{ crs.course_name }}</td>
+          <td>{{ crs.max_numb_students }}</td>
+          <td>{{ instructor|dictKey:crs.course_number }}</td>
+          <td>{{ crs.has_lab }}</td>
           <td class="empty">
-            <form action="{% url 'deletecourse' crs.course_number %}" method="post">
+            <form action="{% url 'deletecourse' crs.course_number %}" method="post" style="display:inline;">
               {% csrf_token %}
               <input type="submit" value="X" class="cross">
             </form>

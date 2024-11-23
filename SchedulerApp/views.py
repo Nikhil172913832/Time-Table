@@ -114,11 +114,28 @@ class Schedule:
     def addCourse(self, data, course, courses, dept, section):
         newClass = Class(dept, section.section_id, course)
 
-        newClass.set_meetingTime(
-            data.get_meetingTimes()[random.randrange(0, len(data.get_meetingTimes()))])
+        available_meeting_times = list(data.get_meetingTimes())
+        
+        for existing_class in self._classes:
+            if existing_class.meeting_time in available_meeting_times:
+                available_meeting_times.remove(existing_class.meeting_time)
 
-        newClass.set_room(
-            data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
+        if available_meeting_times:
+            newClass.set_meetingTime(available_meeting_times[random.randrange(0, len(available_meeting_times))])
+        else:
+            newClass.set_meetingTime(data.get_meetingTimes()[random.randrange(0, len(data.get_meetingTimes()))])
+
+
+        available_rooms = list(data.get_rooms())
+        for existing_class in self._classes:
+            if existing_class.meeting_time == newClass.meeting_time:
+                if existing_class.room in available_rooms:
+                    available_rooms.remove(existing_class.room)
+
+        if available_rooms:
+            newClass.set_room(available_rooms[random.randrange(0, len(available_rooms))])
+        else:
+            newClass.set_room(data.get_rooms()[random.randrange(0, len(data.get_rooms()))])
 
         crs_inst = course.instructors.all()
         newClass.set_instructor(
@@ -173,6 +190,10 @@ class Schedule:
                     classes[i].meeting_time == classes[j].meeting_time):
                     self._numberOfConflicts += 1
 
+                 # Room conflict
+                if (classes[i].meeting_time == classes[j].meeting_time and \
+                    classes[i].room == classes[j].room):
+                    self._numberOfConflicts += 1
         return 1 / (self._numberOfConflicts + 1)
 
 
@@ -256,7 +277,7 @@ def apiterminateGens(request):
 
 
 
-@login_required
+#@login_required
 def timetable(request):
     global data
     data = Data()
@@ -298,7 +319,7 @@ def home(request):
     return render(request, 'index.html', {})
 
 
-@login_required
+#@login_required
 def instructorAdd(request):
     form = InstructorForm(request.POST or None)
     if request.method == 'POST':
@@ -309,13 +330,13 @@ def instructorAdd(request):
     return render(request, 'instructorAdd.html', context)
 
 
-@login_required
+#@login_required
 def instructorEdit(request):
     context = {'instructors': Instructor.objects.all()}
     return render(request, 'instructorEdit.html', context)
 
 
-@login_required
+#@login_required
 def instructorDelete(request, pk):
     inst = Instructor.objects.filter(pk=pk)
     if request.method == 'POST':
@@ -323,7 +344,7 @@ def instructorDelete(request, pk):
         return redirect('instructorEdit')
 
 
-@login_required
+#@login_required
 def roomAdd(request):
     form = RoomForm(request.POST or None)
     if request.method == 'POST':
@@ -334,13 +355,13 @@ def roomAdd(request):
     return render(request, 'roomAdd.html', context)
 
 
-@login_required
+#@login_required
 def roomEdit(request):
     context = {'rooms': Room.objects.all()}
     return render(request, 'roomEdit.html', context)
 
 
-@login_required
+#@login_required
 def roomDelete(request, pk):
     rm = Room.objects.filter(pk=pk)
     if request.method == 'POST':
@@ -348,7 +369,7 @@ def roomDelete(request, pk):
         return redirect('roomEdit')
 
 
-@login_required
+#@login_required
 def meetingTimeAdd(request):
     form = MeetingTimeForm(request.POST or None)
     if request.method == 'POST':
@@ -361,13 +382,13 @@ def meetingTimeAdd(request):
     return render(request, 'meetingTimeAdd.html', context)
 
 
-@login_required
+#@login_required
 def meetingTimeEdit(request):
     context = {'meeting_times': MeetingTime.objects.all()}
     return render(request, 'meetingTimeEdit.html', context)
 
 
-@login_required
+#@login_required
 def meetingTimeDelete(request, pk):
     mt = MeetingTime.objects.filter(pk=pk)
     if request.method == 'POST':
@@ -375,7 +396,7 @@ def meetingTimeDelete(request, pk):
         return redirect('meetingTimeEdit')
 
 
-@login_required
+#@login_required
 def courseAdd(request):
     form = CourseForm(request.POST or None)
     if request.method == 'POST':
@@ -388,7 +409,7 @@ def courseAdd(request):
     return render(request, 'courseAdd.html', context)
 
 
-@login_required
+#@login_required
 def courseEdit(request):
     instructor = defaultdict(list)
     for course in Course.instructors.through.objects.all():
@@ -401,7 +422,7 @@ def courseEdit(request):
     return render(request, 'courseEdit.html', context)
 
 
-@login_required
+#@login_required
 def courseDelete(request, pk):
     crs = Course.objects.filter(pk=pk)
     if request.method == 'POST':
@@ -409,7 +430,7 @@ def courseDelete(request, pk):
         return redirect('courseEdit')
 
 
-@login_required
+#@login_required
 def departmentAdd(request):
     form = DepartmentForm(request.POST or None)
     if request.method == 'POST':
@@ -420,7 +441,7 @@ def departmentAdd(request):
     return render(request, 'departmentAdd.html', context)
 
 
-@login_required
+#@login_required
 def departmentEdit(request):
     course = defaultdict(list)
     for dept in Department.courses.through.objects.all():
@@ -435,7 +456,7 @@ def departmentEdit(request):
     return render(request, 'departmentEdit.html', context)
 
 
-@login_required
+#@login_required
 def departmentDelete(request, pk):
     dept = Department.objects.filter(pk=pk)
     if request.method == 'POST':
@@ -443,7 +464,7 @@ def departmentDelete(request, pk):
         return redirect('departmentEdit')
 
 
-@login_required
+#@login_required
 def sectionAdd(request):
     form = SectionForm(request.POST or None)
     if request.method == 'POST':
@@ -454,13 +475,13 @@ def sectionAdd(request):
     return render(request, 'sectionAdd.html', context)
 
 
-@login_required
+#@login_required
 def sectionEdit(request):
     context = {'sections': Section.objects.all()}
     return render(request, 'sectionEdit.html', context)
 
 
-@login_required
+#@login_required
 def sectionDelete(request, pk):
     sec = Section.objects.filter(pk=pk)
     if request.method == 'POST':
