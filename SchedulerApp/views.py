@@ -147,7 +147,7 @@ class Schedule:
         sections = Section.objects.all()
         for section in sections:
             dept = section.department
-            n = section.num_class_in_week
+            n = section.num_class_in_week()
 
             if n > len(data.get_meetingTimes()):
                 n = len(data.get_meetingTimes())

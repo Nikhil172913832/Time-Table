@@ -18,7 +18,9 @@
           <th>Course Name</th>
           <th>Max Students</th>
           <th>Instructors</th>
-          <th>Has Lab</th>
+          <th>Lectures</th>
+          <th>Labs</th>
+          <th>Tutorials</th>
           <th class="empty"></th>
         </tr>
       </thead>
@@ -29,7 +31,9 @@
           <td>{{ crs.course_name }}</td>
           <td>{{ crs.max_numb_students }}</td>
           <td>{{ instructor|dictKey:crs.course_number }}</td>
-          <td>{{ crs.has_lab }}</td>
+          <td>{{ crs.number_of_lectures }}</td>
+          <td>{{ crs.number_of_labs }}</td>
+          <td>{{ crs.number_of_tutorials }}</td>
           <td class="empty">
             <form action="{% url 'deletecourse' crs.course_number %}" method="post" style="display:inline;">
               {% csrf_token %}

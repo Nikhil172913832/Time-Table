@@ -73,7 +73,9 @@ class Course(models.Model):
     course_name = models.CharField(max_length=40)
     max_numb_students = models.CharField(max_length=65)
     instructors = models.ManyToManyField(Instructor)
-    has_lab = models.BooleanField(default=False)
+    number_of_tutorials = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0)])
+    number_of_lectures = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0)])
+    number_of_labs = models.PositiveIntegerField(default=0, validators=[MinValueValidator(0)])
     
     def __str__(self):
         return f'{self.course_number} {self.course_name}'
@@ -94,7 +96,7 @@ class Department(models.Model):
 class Section(models.Model):
     section_id = models.CharField(max_length=25, primary_key=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
-    num_class_in_week = models.IntegerField(default=0)
+    #num_class_in_week = models.IntegerField(default=0)
     course = models.ForeignKey(Course,
                                on_delete=models.CASCADE,
                                blank=True,
@@ -126,6 +128,11 @@ class Section(models.Model):
         section = Section.objects.get(pk=self.section_id)
         section.instructor = instructor
         section.save()
+    def num_class_in_week(self):
+        lectures = self.course.lecture_set.filter(department=self.department).count()
+        tutorials = self.course.tutorial_set.filter(department=self.department).count()
+        labs = self.course.lab_set.filter(department=self.department).count()
+        return lectures + tutorials + (labs * 2)
 
 
 '''
