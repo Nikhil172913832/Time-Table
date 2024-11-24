@@ -61,11 +61,11 @@ class CourseForm(ModelForm):
             'course_number': 'Course Number',
             'max_numb_students': 'Max Number of Students',
             'instructors': 'Instructors',
+            'number_of_lectures': 'Number of Lectures',
             'number_of_labs': 'Number of Labs',
             'number_of_tutorials': 'Number of Tutorials',
-            'number_of_lectures': 'Number of Lectures',
         }
-        fields = ['course_name', 'course_number', 'max_numb_students', 'instructors', 'number_of_labs', 'number_of_tutorials', 'number_of_lectures']
+        fields = ['course_number', 'course_name','max_numb_students', 'instructors', 'number_of_lectures', 'number_of_labs', 'number_of_tutorials']
 class DepartmentForm(ModelForm):
     class Meta:
         model = Department

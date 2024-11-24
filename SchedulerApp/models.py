@@ -129,10 +129,16 @@ class Section(models.Model):
         section.instructor = instructor
         section.save()
     def num_class_in_week(self):
-        lectures = self.course.lecture_set.filter(department=self.department).count()
-        tutorials = self.course.tutorial_set.filter(department=self.department).count()
-        labs = self.course.lab_set.filter(department=self.department).count()
-        return lectures + tutorials + (labs * 2)
+        total_lectures = 0
+        total_tutorials = 0
+        total_labs = 0
+        
+        for course in self.department.courses.all():
+            total_lectures += course.number_of_lectures
+            total_tutorials += course.number_of_tutorials
+            total_labs += course.number_of_labs
+        
+        return total_lectures + total_tutorials + (total_labs * 2)
 
 
 '''
