@@ -131,15 +131,23 @@ class Section(models.Model):
     def num_class_in_week(self):
         total_lectures = 0
         total_tutorials = 0
-        total_labs = 0
-        
         for course in self.department.courses.all():
             total_lectures += course.number_of_lectures
             total_tutorials += course.number_of_tutorials
+        return total_lectures + total_tutorials
+    
+    def num_labs_in_week(self):
+        total_labs = 0
+        for course in self.department.courses.all():
             total_labs += course.number_of_labs
-        
-        return total_lectures + total_tutorials + (total_labs * 2)
+        return total_labs
 
+    def is_valid_lab_start_time(self, meeting_time):
+        invalid_start_times = [2, 4]
+        return meeting_time.pid[-1] not in invalid_start_times
+    
+    def are_consecutive_meeting_times(self, mt1, mt2):
+        return mt1.pid[0] == mt2.pid[0] and abs(int(mt1.pid[-1]) - int(mt2.pid[-1])) == 1
 
 '''
 class Data(models.Manager):
